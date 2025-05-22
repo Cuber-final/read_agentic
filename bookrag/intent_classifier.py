@@ -75,6 +75,7 @@ class IntentClassifier:
         selected_text_str = "无" if not user_input.selected_text else user_input.selected_text.text
         
         # 准备对话历史摘要
+        # TODO 对话历史摘要可以结合其它llm进行压缩总结，设计对话系统的状态管理
         conversation_summary = ""
         if user_input.conversation_history and len(user_input.conversation_history) > 0:
             # 简单示例：仅取最近一轮对话作为摘要

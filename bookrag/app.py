@@ -211,7 +211,19 @@ class BookRAGApp:
             query_plan = self.query_agent.plan_query(
                 query, intent_result, context, reflection_feedback
             )
-            self.logger.info(f"查询规划完成，生成了{len(query_plan.get('final_queries', []))}个查询")
+            
+            # 检查查询规划是否有最终查询
+            final_queries = query_plan.get("final_queries", [])
+            if not final_queries:
+                self.logger.warning("查询规划未返回有效查询，使用默认查询")
+                final_queries = [{
+                    "query_text": query,
+                    "metadata_filters": [],
+                    "purpose": "默认查询"
+                }]
+                query_plan["final_queries"] = final_queries
+            
+            self.logger.info(f"查询规划完成，生成了{len(final_queries)}个查询")
             
             # 步骤5: RAG检索
             rag_result = self.rag_interface.execute_query_plan(query_plan)
@@ -226,8 +238,9 @@ class BookRAGApp:
             planning_info["iterations"].append({
                 "iteration": iteration + 1,
                 "query_plan_summary": {
-                    "query_count": len(query_plan.get("final_queries", [])),
-                    "execution_plan": query_plan.get("execution_plan", "")
+                    "query_count": len(final_queries),
+                    "execution_plan": query_plan.get("execution_plan", ""),
+                    "planning_process": query_plan.get("planning_process", {})
                 },
                 "rag_result_summary": {
                     "chunk_count": len(rag_result.get("combined_chunks", [])),

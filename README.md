@@ -1,3 +1,5 @@
+本项目基于AutoChain学习并进行二次开发，仅供个人学习使用
+
 # AutoChain
 
 Large language models (LLMs) have shown huge success in different text generation tasks and
